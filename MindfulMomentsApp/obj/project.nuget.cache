@@ -1,10 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "XfznVKDDE2c=",
+  "dgSpecHash": "kLeV5TlCBjE=",
   "success": true,
   "projectFilePath": "/Users/claudia.madrid/Desktop/claudiaThings/School/dotnetClass/team17_app/MindfulMomentsApp/MindfulMomentsApp.csproj",
-  "expectedPackageFiles": [
-    "/Users/claudia.madrid/.nuget/packages/microsoft.aspnetcore.app.internal.assets/10.0.1/microsoft.aspnetcore.app.internal.assets.10.0.1.nupkg.sha512"
-  ],
+  "expectedPackageFiles": [],
   "logs": []
 }

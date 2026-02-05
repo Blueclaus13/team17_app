@@ -19,8 +19,8 @@ builder.Services.AddAuthentication(options =>
     options.LoginPath = "/Account/SignIn";
 }).AddGoogle(options =>
 {
-    options.ClientId = builder.Configuration["Authentication:Google:ClientId"] ?? "";
-    options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"] ?? "";
+    options.ClientId = builder.Configuration["GOOGLE_CLIENT_ID"] ?? "";
+    options.ClientSecret = builder.Configuration["GOOGLE_CLIENT_SECRET"] ?? "";
 
     options.CorrelationCookie.SameSite = SameSiteMode.Lax;
     options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;

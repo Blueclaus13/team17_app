@@ -23,6 +23,10 @@ MindfulMomentsApp/obj
 .DS_Store
 Thumbs.db
 
+bin/
+obj/
+
+
 .env
 MindfulMomentsApp/obj/MindfulMomentsApp.csproj.nuget.dgspec.json
 MindfulMomentsApp/obj/project.assets.json

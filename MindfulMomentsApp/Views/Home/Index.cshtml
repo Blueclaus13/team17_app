@@ -1,8 +1,29 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@using MindfulMomentsApp.Views.Shared.Components
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Authorization
+@using System.Security.Claims
+
+
+@{
+    ViewData["Title"] = "Home";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+@if (User.Identity != null && User.Identity.IsAuthenticated)
+{
+    <h2>Welcome @User.Identity.Name!</h2>
+    <p>You are successfully logged in.</p>
+
+    <a class="btn btn-danger" asp-controller="Account" asp-action="Logout">Logout</a>
+
+    @* <component type="typeof(Counter)" render-mode="ServerPrerendered" /> *@
+}
+else
+{
+    <div class="text-center">
+        <h1 class="display-4">Welcome to Mindful Moments</h1>
+        <p>Please sign in to start your session.</p>
+
+        <a class="btn btn-primary" asp-controller="Account" asp-action="SignIn">Sign In</a>
+    </div>
+}
+

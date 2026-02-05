@@ -11,7 +11,12 @@ public class HomeController : Controller
         return View();
     }
 
-    public IActionResult Privacy()
+    public IActionResult Blazor()
+    {
+    return View("_Host");
+    }
+
+    public IActionResult Account()
     {
         return View();
     }

@@ -1,0 +1,33 @@
+MindfulMomentsApp/obj/MindfulMomentsApp.csproj.nuget.dgspec.json
+MindfulMomentsApp/obj/project.assets.json
+MindfulMomentsApp/obj/project.nuget.cache
+# Build results
+MindfulMomentsApp/bin/
+MindfulMomentsApp/obj
+
+# User-specific files
+*.user
+*.suo
+*.rsuser
+*.userosscache
+*.sln.docstates
+
+# Rider / VS Code / VS
+.vs/
+.vscode/
+
+# Logs
+*.log
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+bin/
+obj/
+
+
+.env
+MindfulMomentsApp/obj/MindfulMomentsApp.csproj.nuget.dgspec.json
+MindfulMomentsApp/obj/project.assets.json
+MindfulMomentsApp/obj/project.nuget.cache

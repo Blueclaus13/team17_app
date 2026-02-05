@@ -1,8 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "kLeV5TlCBjE=",
+  "dgSpecHash": "LAb7r7S6IBk=",
   "success": true,
   "projectFilePath": "/Users/claudia.madrid/Desktop/claudiaThings/School/dotnetClass/team17_app/MindfulMomentsApp/MindfulMomentsApp.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "/Users/claudia.madrid/.nuget/packages/microsoft.aspnetcore.authentication.google/10.0.2/microsoft.aspnetcore.authentication.google.10.0.2.nupkg.sha512"
+  ],
   "logs": []
 }

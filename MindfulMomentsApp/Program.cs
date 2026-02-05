@@ -14,8 +14,8 @@ builder.Services.AddAuthentication(options =>
 .AddCookie()
 .AddGoogle(options =>
 {
-    options.ClientId = builder.Configuration["Authentication:Google:ClientId"]!;
-    options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"]!;
+    options.ClientId = builder.Configuration["GOOGLE_CLIENT_ID"]!;
+    options.ClientSecret = builder.Configuration["GOOGLE_CLIENT_SECRET"]!;
 
 });
 

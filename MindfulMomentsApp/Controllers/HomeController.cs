@@ -16,7 +16,7 @@ public class HomeController : Controller
     return View("_Host");
     }
 
-    public IActionResult Privacy()
+    public IActionResult Account()
     {
         return View();
     }

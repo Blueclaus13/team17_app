@@ -10,7 +10,6 @@ namespace MindfulMomentsApp.Controllers;
 
 public class AccountController : Controller
 {
-    // YOUR CODE: Displays the Account Page with your data
     public IActionResult Index()
     {
         if (User.Identity != null && User.Identity.IsAuthenticated)

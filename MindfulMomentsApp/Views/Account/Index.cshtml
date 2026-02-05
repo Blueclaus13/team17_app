@@ -6,13 +6,14 @@
 <div class="account-container">
     <aside class="account-sidebar">
         <div class="profile-section">
-            <img src="@Model.ProfilePictureUrl" alt="Profile Picture" class="profile-picture" />
+            <img src="@Model.ProfilePictureUrl"   alt="Profile Picture" class="rounded-circle mb-3"
+                 style="width: 150px; height: 150px; object-fit: cover; border: 5px solid #FF69B4;" />
             <h2 class="user-name">@Model.Name</h2>
             <p class="user-email">@Model.Email</p>
         </div>
 
         <nav class="account-nav">
-            </nav>
+        </nav>
     </aside>
 
     <main class="account-content">

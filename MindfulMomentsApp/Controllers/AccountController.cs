@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MindfulMomentsApp.Models;
 using System.Security.Claims;
@@ -14,36 +15,33 @@ public class AccountController : Controller
     {
         if (User.Identity != null && User.Identity.IsAuthenticated)
         {
-            var modelFromGoogle = new AccountViewModel
+            var userName = User.FindFirstValue(ClaimTypes.Name) ?? "User";
+            var userPicture = User.FindFirstValue("picture") ?? $"https://ui-avatars.com/api/?name={userName}&background=random";
+
+            var model = new AccountViewModel
             {
-                Name = User.FindFirstValue(ClaimTypes.Name) ?? "User",
+                Name = userName,
                 Email = User.FindFirstValue(ClaimTypes.Email) ?? "No Email",
-                ProfilePictureUrl = User.FindFirstValue("picture") ?? "/images/default-avatar.png",
+                ProfilePictureUrl = userPicture,
                 JoinDate = DateTime.Now,
                 TotalEntries = 0
             };
 
-            return View(modelFromGoogle);
+            return View(model);
         }
 
-        var model = new AccountViewModel
-        {
-            Name = "Israel Carmona",
-            Email = "israel@example.com",
-            ProfilePictureUrl = "https://via.placeholder.com/150",
-            JoinDate = new DateTime(2026, 1, 10),
-            TotalEntries = 14,
-            LastEntryDate = "February 3, 2026"
-        };
-        return View(model);
+        return RedirectToAction("SignIn");
     }
 
+    [AllowAnonymous]
     [HttpGet]
     public IActionResult SignIn()
     {
         return View();
     }
 
+
+    [AllowAnonymous]
     [HttpPost]
     public async Task<IActionResult> SignIn(string email, string password)
     {

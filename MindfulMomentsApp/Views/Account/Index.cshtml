@@ -1,0 +1,28 @@
+@model MindfulMomentsApp.Models.AccountViewModel
+@{
+    ViewData["Title"] = "My Account";
+}
+
+<div class="account-container">
+    <aside class="account-sidebar">
+        <div class="profile-section">
+            <img src="@Model.ProfilePictureUrl" alt="Profile Picture" class="profile-picture" />
+            <h2 class="user-name">@Model.Name</h2>
+            <p class="user-email">@Model.Email</p>
+        </div>
+
+        <nav class="account-nav">
+            </nav>
+    </aside>
+
+    <main class="account-content">
+        <div class="stats-card">
+            <h3>Account Stats</h3>
+            <hr />
+            <div class="stat-item"><strong>Join Date:</strong> @Model.JoinDate.ToString("MMM d, yyyy")</div>
+            <div class="stat-item"><strong>Total Entries:</strong> @Model.TotalEntries</div>
+            <div class="stat-item"><strong>Last Entry:</strong> @Model.LastEntryDate</div>
+            <div class="stat-item"><strong>Weekly Streak:</strong> 0</div>
+        </div>
+    </main>
+</div>

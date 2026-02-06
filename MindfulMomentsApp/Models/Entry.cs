@@ -9,7 +9,7 @@ namespace MindfulMomentsApp.Models;
 public class Entry
 {
     public int Id { get; set; }
-    
+
     [Display(Name = "Date")]
     [DataType(DataType.Date)]
     public DateTime Date { get; set; }
@@ -21,5 +21,5 @@ public class Entry
 
     [Required]
     [StringLength(150, MinimumLength = 3)]
-    public string Description { get; set; }
+    public string? Description { get; set; }
 }

@@ -1,19 +1,21 @@
 using Microsoft.AspNetCore.Mvc;
 using MindfulMomentsApp.Models;
-//using MindfulMomentsApp.Data;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using MindfulMomentsApp.Data;
+using MindfulMomentsApp.Models;
 
 namespace MindfulMomentsApp.Controllers
-
 {   
 
     public class EntryController : Controller
     {
-        // private readonly EntryContext _context;
+         private readonly AppDbContext _context;
 
-        // public EntryController(EntryContext context)
-        // {
-        //     _context = context;
-        // }
+        public EntryController(AppDbContext context)
+        {
+            _context = context;
+        }
 
          // GET: /Dashboard
         public IActionResult Dashboard()
@@ -42,8 +44,25 @@ namespace MindfulMomentsApp.Controllers
         //Post Entries
         public IActionResult Create()
             {
-                return View();
+                    return View();
             }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create([Bind("EntryId,JournalId,Mood,CreatedDate, UpdatedDate, Activity, Description")] Entry entry)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(entry);
+            }
+
+            entry.CreatedDate = DateTime.UtcNow;
+            entry.UpdatedDate = null;
+
+            _context.Add(entry);
+            await _context.SaveChangesAsync();
+            return Redirect("/Journal");
+        }
 
         
         // GET: Journal/Edit/1

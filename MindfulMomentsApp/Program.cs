@@ -10,6 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddServerSideBlazor();
+builder.Services.AddHttpClient();
 //sing in configuration for Google Authentication
 builder.Services.AddAuthentication(options =>
 {

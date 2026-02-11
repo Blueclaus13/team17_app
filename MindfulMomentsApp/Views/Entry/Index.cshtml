@@ -1,0 +1,41 @@
+@model IEnumerable<MindfulMomentsApp.Models.Entry>
+
+@{
+    ViewData["Title"] = "Entries";
+}
+
+<h1>Entries</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Create New Entry</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Created</th>
+            <th>Mood</th>
+            <th>Activity</th>
+            <th>Description</th>
+            <th>Journal</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.CreatedDate.ToLocalTime()</td>
+                <td>@item.Mood</td>
+                <td>@item.Activity</td>
+                <td>@item.Description</td>
+                <td>@item.JournalId</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.EntryId">Details</a> |
+                    <a asp-action="Edit" asp-route-id="@item.EntryId">Edit</a> |
+                    <a asp-action="Delete" asp-route-id="@item.EntryId">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

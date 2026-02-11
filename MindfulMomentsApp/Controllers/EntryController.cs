@@ -1,92 +1,209 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using MindfulMomentsApp.Data;
 using MindfulMomentsApp.Models;
-//using MindfulMomentsApp.Data;
+using System.Security.Claims;
 
 namespace MindfulMomentsApp.Controllers
-
-{   
-
+{
     public class EntryController : Controller
     {
-        // private readonly EntryContext _context;
+        private readonly AppDbContext _context;
 
-        // public EntryController(EntryContext context)
-        // {
-        //     _context = context;
-        // }
-
-         // GET: /Dashboard
-        public IActionResult Dashboard()
-            {
-                return View();
-            }
-
-        //Entries List
-        // GET: /Journal
-        public IActionResult Journal()
-            {
-                return View();
-            }
-
-        // GET: /Journal/Details/1
-        public IActionResult Details(int? id)
-            {
-                // if (id == null)
-                // {
-                //     return NotFound();
-                // }
-
-                // var entry = _context.Entries.Find(id);
-                // if (entry == null)
-                // {
-                //     return NotFound();
-                // }
-                 return View();
-            }       
-
-        // GET: /AddEntry
-        //Post Entries
-        public IActionResult AddEntry()
-            {
-                return View();
-            }
-
-        
-        // GET: Journal/Edit/1
-         //Update Entries
-         public async Task<IActionResult> Edit(int? id)
+        public EntryController(AppDbContext context)
         {
-            // if (id == null)
-            // {
-            //     return NotFound();
-            // }
-
-            // var entry = await _context.Entries.FindAsync(id);
-            // if (entry == null)
-            // {
-            //     return NotFound();
-            // }
-             return View();
+            _context = context;
         }
-       
-       //GET: Journal/Delete/1
-       //Delete Entries
-       public async Task<IActionResult> Delete(int? id)
+
+        public async Task<IActionResult> Index()
         {
-            // if (id == null)
-            // {
-            //     return NotFound();
-            // }
+            var journalId = await GetCurrentUserJournalIdAsync();
+            if (journalId == null)
+            {
+                return View(new List<Entry>());
+            }
 
-            // var entry = await _context.Entries
-            //     .FirstOrDefaultAsync(m => m.Id == id);
-            // if (entry == null)
-            // {
-            //     return NotFound();
-            // }
+            var entries = await _context.Entries
+                .Where(e => e.JournalId == journalId.Value)
+                .OrderByDescending(e => e.CreatedDate)
+                .ToListAsync();
 
-             return View();
+            return View(entries);
         }
-        
+
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var journalId = await GetCurrentUserJournalIdAsync();
+
+            var entry = await _context.Entries
+                .FirstOrDefaultAsync(m => m.EntryId == id && m.JournalId == journalId);
+
+            if (entry == null)
+            {
+                return NotFound();
+            }
+
+            return View(entry);
+        }
+
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(Entry entry)
+        {
+            var journalId = await GetCurrentUserJournalIdAsync();
+            if (journalId == null)
+            {
+                ModelState.AddModelError(string.Empty, "No journal is associated with the current user.");
+                return View(entry);
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(entry);
+            }
+
+            entry.JournalId = journalId.Value;
+            entry.CreatedDate = DateTime.UtcNow;
+            entry.UpdatedDate = null;
+
+            _context.Add(entry);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var journalId = await GetCurrentUserJournalIdAsync();
+
+            var entry = await _context.Entries
+                .FirstOrDefaultAsync(e => e.EntryId == id && e.JournalId == journalId);
+            if (entry == null)
+            {
+                return NotFound();
+            }
+
+            return View(entry);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, Entry entry)
+        {
+            if (id != entry.EntryId)
+            {
+                return NotFound();
+            }
+
+            var journalId = await GetCurrentUserJournalIdAsync();
+            if (journalId == null)
+            {
+                return NotFound();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(entry);
+            }
+
+            try
+            {
+                entry.JournalId = journalId.Value;
+                entry.UpdatedDate = DateTime.UtcNow;
+                _context.Update(entry);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!EntryExists(entry.EntryId))
+                {
+                    return NotFound();
+                }
+
+                throw;
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var journalId = await GetCurrentUserJournalIdAsync();
+
+            var entry = await _context.Entries
+                .FirstOrDefaultAsync(m => m.EntryId == id && m.JournalId == journalId);
+
+            if (entry == null)
+            {
+                return NotFound();
+            }
+
+            return View(entry);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var journalId = await GetCurrentUserJournalIdAsync();
+
+            var entry = await _context.Entries
+                .FirstOrDefaultAsync(e => e.EntryId == id && e.JournalId == journalId);
+            if (entry != null)
+            {
+                _context.Entries.Remove(entry);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        private bool EntryExists(int id)
+        {
+            return _context.Entries.Any(e => e.EntryId == id);
+        }
+
+        private async Task<int?> GetCurrentUserJournalIdAsync()
+        {
+            var externalId = User.FindFirstValue(ClaimTypes.NameIdentifier)
+                             ?? User.FindFirstValue(ClaimTypes.Name);
+
+            if (string.IsNullOrEmpty(externalId))
+            {
+                return null;
+            }
+
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.GoogleId == externalId);
+
+            if (user == null)
+            {
+                return null;
+            }
+
+            var journal = await _context.Journals
+                .FirstOrDefaultAsync(j => j.UserId == user.UserId);
+
+            return journal?.JournalId;
+        }
     }
 }

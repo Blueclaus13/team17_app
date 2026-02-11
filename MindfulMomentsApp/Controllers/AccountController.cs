@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using MindfulMomentsApp.Data;
 using MindfulMomentsApp.Models;
 using System.Security.Claims;
 
@@ -10,6 +12,12 @@ namespace MindfulMomentsApp.Controllers;
 
 public class AccountController : Controller
 {
+    private readonly AppDbContext _context;
+
+    public AccountController(AppDbContext context)
+    {
+        _context = context;
+    }
     public IActionResult Index()
     {
         if (User.Identity != null && User.Identity.IsAuthenticated)
@@ -46,6 +54,8 @@ public class AccountController : Controller
     {
         if (email == "test@gmail.com" && password == "1234")
         {
+            await EnsureUserAndJournalAsync(email, email, email, null, null);
+
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, email)
@@ -80,6 +90,20 @@ public class AccountController : Controller
 
         var claims = authResult.Principal.Claims.ToList();
 
+        var externalId = claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value
+                         ?? claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value
+                         ?? string.Empty;
+
+        var email = claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value ?? string.Empty;
+        var firstName = claims.FirstOrDefault(c => c.Type == ClaimTypes.GivenName)?.Value;
+        var lastName = claims.FirstOrDefault(c => c.Type == ClaimTypes.Surname)?.Value;
+        var picture = claims.FirstOrDefault(c => c.Type == "picture")?.Value;
+
+        if (!string.IsNullOrEmpty(externalId) && !string.IsNullOrEmpty(email))
+        {
+            await EnsureUserAndJournalAsync(externalId, email, firstName, lastName, picture);
+        }
+
         var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
         var principal = new ClaimsPrincipal(identity);
 
@@ -92,5 +116,49 @@ public class AccountController : Controller
     {
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         return RedirectToAction("SignIn");
+    }
+
+    private async Task<User> EnsureUserAndJournalAsync(
+        string externalId,
+        string email,
+        string? firstName,
+        string? lastName,
+        string? photoUrl)
+    {
+        var user = await _context.Users.SingleOrDefaultAsync(u => u.GoogleId == externalId);
+
+        if (user == null)
+        {
+            user = new User
+            {
+                GoogleId = externalId,
+                Email = email,
+                FirstName = firstName ?? string.Empty,
+                LastName = lastName ?? string.Empty,
+                Photo = photoUrl
+            };
+
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+        }
+
+        var journal = await _context.Journals.SingleOrDefaultAsync(j => j.UserId == user.UserId);
+        if (journal == null)
+        {
+            var journalName = string.IsNullOrWhiteSpace(user.FirstName)
+                ? "My Journal"
+                : $"{user.FirstName}'s Journal";
+
+            journal = new Journal
+            {
+                UserId = user.UserId,
+                JournalName = journalName
+            };
+
+            _context.Journals.Add(journal);
+            await _context.SaveChangesAsync();
+        }
+
+        return user;
     }
 }

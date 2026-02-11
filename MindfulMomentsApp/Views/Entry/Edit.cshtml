@@ -1,0 +1,40 @@
+@model MindfulMomentsApp.Models.Entry
+
+@{
+    ViewData["Title"] = "Edit Entry";
+}
+
+<h1>Edit Entry</h1>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="EntryId" />
+
+    <div class="form-group mb-3">
+        <label asp-for="Mood" class="form-label"></label>
+        <select asp-for="Mood" class="form-select"
+                asp-items="Html.GetEnumSelectList<MindfulMomentsApp.Models.Enums.Moods>()"></select>
+        <span asp-validation-for="Mood" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label asp-for="Activity" class="form-label"></label>
+        <select asp-for="Activity" class="form-select"
+                asp-items="Html.GetEnumSelectList<MindfulMomentsApp.Models.Enums.Activities>()"></select>
+        <span asp-validation-for="Activity" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mb-3">
+        <label asp-for="Description" class="form-label"></label>
+        <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

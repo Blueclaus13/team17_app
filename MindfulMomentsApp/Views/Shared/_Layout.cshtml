@@ -10,69 +10,78 @@
     <title>@ViewData["Title"] - MindfulMomentsApp</title>
     <script src="_framework/blazor.server.js"></script>
     <script type="importmap"></script>
+    <script src="https://kit.fontawesome.com/9ecf78ba67.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/MindfulMomentsApp.styles.css" asp-append-version="true" />
 </head>
 
 <body>
-    <header>
-        
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+<header>
+        <nav class="navbar navbar-dark d-md-none p-3" style="background-color: #6d5440;">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">MindfulMomentsApp</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
-                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <a class="navbar-brand fw-bold" asp-controller="Home" asp-action="Index">MindfulMoments<span class="fw-light opacity-75 fs-6"> @ViewData["Title"]</span></a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mobileMenu">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Dashboard</a>
+                <div class="collapse navbar-collapse" id="mobileMenu">
+                    <ul class="nav flex-column mt-3">
+                        <li class="nav-item mb-2">
+                            <a class="nav-link text-light" asp-controller="Home" asp-action="Index"><i class="fa-solid fa-house me-2"></i> Home</a>
                         </li>
-                        @* <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Entry" asp-action="Create">Journal</a>
-                        </li> *@
-                        <li class="nav-item">
-                            <a class="nav-link text-dark"  href="/Journal">Journal</a>
+                        <li class="nav-item mb-2">
+                            <a class="nav-link text-light" href="/Journal"><i class="fa-solid fa-book me-2"></i> Journal</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home"
-                                asp-action="Privacy">Privacy</a>
-                        </li>
-
-                    </ul>
-
-                    <ul class="navbar-nav">
-
-                        @if (User.Identity != null && User.Identity.IsAuthenticated)
-                        {
-
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Account" asp-action="Logout">Logout</a>
-                            </li>
+                        @if (User.Identity?.IsAuthenticated == true) {
+                            <li class="nav-item mb-2"><a class="nav-link text-light" asp-controller="Account" asp-action="Logout"><i class="fa-solid fa-right-from-bracket me-2"></i> Logout</a></li>
+                        } else {
+                            <li class="nav-item mb-2"><a class="nav-link text-light" asp-controller="Account" asp-action="SignIn"><i class="fa-solid fa-user me-2"></i> Sign In</a></li>
                         }
-                        else
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Account" asp-action="SignIn">Sign In</a>
-                            </li>
-                        }
-
                     </ul>
-
-
                 </div>
             </div>
         </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
 
-    <footer class="border-top footer text-muted">
+        <div class="d-flex" id="wrapper">
+            <div class="bg-brown text-light d-none d-md-block sidebar-wrapper" style="background-color: #6d5440;">
+                <div class="p-4">
+                    <a class="navbar-brand text-light fs-4 fw-bold mb-4 d-block" asp-controller="Home" asp-action="Index">MindfulMoments</a>
+                    <ul class="nav nav-pills flex-column">
+                        <li class="nav-item mb-3">
+                            <a class="nav-link text-light d-flex align-items-center p-1 fs-5" asp-controller="Home" asp-action="Index">
+                                <i class="fa-solid fa-house me-3"></i> Home
+                            </a>
+                        </li>
+                        <li class="nav-item mb-3">
+                            <a class="nav-link text-light d-flex align-items-center p-1 fs-5" href="/Journal">
+                                <i class="fa-solid fa-book me-3"></i> Journal
+                            </a>
+                        </li>
+
+                        @if (User.Identity?.IsAuthenticated == true) {
+                            <li class="nav-item mb-3"><a class="nav-link text-light d-flex align-items-center p-1 fs-5" asp-controller="Account" asp-action="Logout"><i class="fa-solid fa-right-from-bracket me-3"></i> Logout</a></li>
+                        } else {
+                            <li class="nav-item mb-3"><a class="nav-link text-light d-flex align-items-center p-1 fs-5" asp-controller="Account" asp-action="SignIn"><i class="fa-solid fa-user me-3"></i> Sign In</a></li>
+                        }
+
+                        <hr class="text-light opacity-25">
+
+
+                        <li class="nav-item mb-2">
+                            <a class="nav-link text-light" asp-controller="Home" asp-action="Privacy"><i class="fa-solid fa-shield-halved me-2"></i> Privacy</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="flex-grow-1">
+                <main role="main" class="p-4">
+                    @RenderBody()
+                </main>
+            </div>
+        </div>
+    </header>
+    <footer class="border-top footer text-muted text-center">
         <div class="container">
             &copy; 2026 - MindfulMomentsApp - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>

@@ -12,7 +12,9 @@
 {
     <h2>Welcome @User.Identity.Name!</h2>
     <p>You are successfully logged in.</p>
-
+<div class="my-4">
+        @await Component.InvokeAsync("Quotes")
+    </div>
     <a class="btn btn-danger" asp-controller="Account" asp-action="Logout">Logout</a>
 
     @* <component type="typeof(Counter)" render-mode="ServerPrerendered" /> *@

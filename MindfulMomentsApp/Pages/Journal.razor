@@ -1,4 +1,7 @@
 @page "/Journal"
+@using MindfulMomentsApp.Models
+@using MindfulMomentsApp.Views.Shared.Components
+@using MindfulMomentsApp.Models.Enums
 
 <PageTitle>Journal</PageTitle>
 
@@ -10,6 +13,27 @@
     <a href="/Entry/Create" class="btn btn-primary">Create New Entry</a>
 </p>
 
+@foreach (var entry in Entries)
+{
+    <EntryCard Entry="entry" />
+}
+
 @code {
+    private List<Entry> Entries = new();
+
+    protected override void OnInitialized()
+    {
+        // Example test data
+        Entries = new List<Entry>
+        {
+            new Entry
+            {
+                Mood = Mood.Happy,
+                Activity = Activity.Working,
+                Description = "Great workout today!",
+                CreatedDate = DateTime.Now
+            }
+        };
+    }
    
 }

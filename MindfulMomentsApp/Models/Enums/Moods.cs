@@ -1,5 +1,5 @@
 namespace MindfulMomentsApp.Models.Enums;
-public enum Moods
+public enum Mood
 {
     Sad,
     Angry,

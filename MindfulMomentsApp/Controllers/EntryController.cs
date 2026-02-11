@@ -21,12 +21,6 @@ namespace MindfulMomentsApp.Controllers
                 return View();
             }
 
-        //Entries List
-        // GET: /Journal
-        public IActionResult Journal()
-            {
-                return View();
-            }
 
         // GET: /Journal/Details/1
         public IActionResult Details(int? id)
@@ -46,7 +40,7 @@ namespace MindfulMomentsApp.Controllers
 
         // GET: /AddEntry
         //Post Entries
-        public IActionResult AddEntry()
+        public IActionResult Create()
             {
                 return View();
             }

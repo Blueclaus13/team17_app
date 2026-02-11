@@ -8,8 +8,8 @@ namespace MindfulMomentsApp.Models
         public int JournalId { get; set; }
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
         public DateTime? UpdatedDate { get; set; }
-        public Moods Mood { get; set; }
-        public Activities Activity { get; set; }
+        public Mood Mood { get; set; }
+        public Activity Activity { get; set; }
         public string Description { get; set; } = string.Empty;
     }
 }

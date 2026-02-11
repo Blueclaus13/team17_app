@@ -1,5 +1,5 @@
 namespace MindfulMomentsApp.Models.Enums;
-public enum Activities
+public enum Activity
 {
     Sleeping,
     Eating,

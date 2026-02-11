@@ -1,5 +1,9 @@
+using Microsoft.EntityFrameworkCore;
+using MindfulMomentsApp.Data;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,12 +16,28 @@ builder.Services.AddAuthentication(options =>
     options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
 })
-.AddCookie()
-.AddGoogle(options =>
+.AddCookie(options =>
 {
-    options.ClientId = builder.Configuration["GOOGLE_CLIENT_ID"]!;
-    options.ClientSecret = builder.Configuration["GOOGLE_CLIENT_SECRET"]!;
+    options.LoginPath = "/Account/SignIn";
+}).AddGoogle(options =>
+{
+    options.ClientId = builder.Configuration["GOOGLE_CLIENT_ID"] ?? "";
+    options.ClientSecret = builder.Configuration["GOOGLE_CLIENT_SECRET"] ?? "";
 
+    options.CorrelationCookie.SameSite = SameSiteMode.Lax;
+    options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+    options.Events.OnCreatingTicket = context =>
+    {
+        if (context.User.TryGetProperty("picture", out var pictureElement))
+        {
+            var pictureUrl = pictureElement.GetString();
+            if (!string.IsNullOrEmpty(pictureUrl))
+            {
+                context.Identity?.AddClaim(new Claim("picture", pictureUrl));
+            }
+        }
+        return Task.CompletedTask;
+    };
 });
 
 
@@ -32,6 +52,7 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();

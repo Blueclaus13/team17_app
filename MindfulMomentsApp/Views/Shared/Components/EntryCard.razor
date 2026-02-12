@@ -1,5 +1,4 @@
 @using MindfulMomentsApp.Models
-@using MindfulMomentsApp.Models.Enums
 
 <div class="card mb-3 shadow-sm">
     <div class="card-body">
@@ -8,7 +7,7 @@
         </h4>
 
         <h6 class="card-subtitle mb-2 text-muted">
-            @Entry.CreatedDate.ToString("MMMM dd, yyyy")
+            @Entry.CreatedDate.ToLocalTime().ToString("MMMM dd, yyyy")
         </h6>
 
         <p class="card-text">
@@ -28,7 +27,7 @@
                 </a>
 
             <!-- Edit Button (only if today) -->
-            @if (Entry.CreatedDate.Date == DateTime.Today)
+            @if (Entry.CreatedDate.ToLocalTime().Date == DateTime.Today)
             {
                  <a href="/Entry/Edit/@Entry.EntryId"
                     class="btn btn-primary btn-sm me-2">

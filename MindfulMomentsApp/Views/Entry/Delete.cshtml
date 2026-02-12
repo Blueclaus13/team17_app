@@ -17,7 +17,7 @@
         </h5>
 
         <h6 class="card-subtitle mb-2 text-muted">
-            @Model.CreatedDate.ToString("MMMM dd, yyyy")
+            @Model.CreatedDate.ToLocalTime().ToString("MMMM dd, yyyy")
         </h6>
 
         <p>
@@ -31,7 +31,7 @@
     </div>
 </div>
 
-<form asp-action="DeleteConfirmed" method="post">
+<form asp-action="Delete" method="post">
     @Html.AntiForgeryToken()
     <input type="hidden" asp-for="EntryId" />
 
@@ -39,7 +39,7 @@
         Delete
     </button>
 
-    <a asp-action="Index" class="btn btn-secondary">
+    <a href="/Journal" class="btn btn-secondary">
         Cancel
     </a>
 </form>

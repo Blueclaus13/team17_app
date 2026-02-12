@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using MindfulMomentsApp.Models;
-using MindfulMomentsApp.Models.Enums;
 
 namespace MindfulMomentsApp.Data
 {
@@ -39,12 +38,8 @@ namespace MindfulMomentsApp.Data
       {
         entity.HasKey(e => e.EntryId);
         entity.Property(e => e.Description).HasMaxLength(1000);
-        entity.Property(e => e.Mood)
-          .HasConversion<string>();
-        entity.Property(e => e.Activity)
-          .HasConversion<string>();
-        entity.HasOne<Journal>()
-                  .WithMany()
+        entity.HasOne(e => e.Journal)
+                  .WithMany(j => j.Entries)
                   .HasForeignKey(e => e.JournalId)
                   .OnDelete(DeleteBehavior.Cascade);
 

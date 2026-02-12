@@ -8,28 +8,25 @@ using System.Security.Claims;
 
 namespace MindfulMomentsApp.Controllers;
 
+[Authorize]
+[ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
 public class AccountController : Controller
 {
     public IActionResult Index()
     {
-        if (User.Identity != null && User.Identity.IsAuthenticated)
+        var userName = User.FindFirstValue(ClaimTypes.Name) ?? "User";
+        var userPicture = User.FindFirstValue("picture") ?? User.FindFirstValue("urn:google:picture") ?? $"https://ui-avatars.com/api/?name={userName}&background=random";
+
+        var model = new AccountViewModel
         {
-            var userName = User.FindFirstValue(ClaimTypes.Name) ?? "User";
-            var userPicture = User.FindFirstValue("picture") ?? $"https://ui-avatars.com/api/?name={userName}&background=random";
+            Name = userName,
+            Email = User.FindFirstValue(ClaimTypes.Email) ?? "No Email",
+            ProfilePictureUrl = userPicture,
+            JoinDate = DateTime.Now,
+            TotalEntries = 0
+        };
 
-            var model = new AccountViewModel
-            {
-                Name = userName,
-                Email = User.FindFirstValue(ClaimTypes.Email) ?? "No Email",
-                ProfilePictureUrl = userPicture,
-                JoinDate = DateTime.Now,
-                TotalEntries = 0
-            };
-
-            return View(model);
-        }
-
-        return RedirectToAction("SignIn");
+        return View(model);
     }
 
     [AllowAnonymous]
@@ -48,7 +45,8 @@ public class AccountController : Controller
         {
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.Name, email)
+                new Claim(ClaimTypes.Name, email),
+                new Claim(ClaimTypes.Email, email)
             };
 
             var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -63,6 +61,7 @@ public class AccountController : Controller
         return View();
     }
 
+    [AllowAnonymous]
     public IActionResult GoogleLogin()
     {
         var redirectUrl = Url.Action("GoogleResponse", "Account");
@@ -71,14 +70,15 @@ public class AccountController : Controller
             GoogleDefaults.AuthenticationScheme);
     }
 
+    [AllowAnonymous]
     public async Task<IActionResult> GoogleResponse()
     {
-        var authResult = await HttpContext.AuthenticateAsync();
+        var result = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
 
-        if (!authResult.Succeeded)
+        if (!result.Succeeded)
             return RedirectToAction("SignIn");
 
-        var claims = authResult.Principal.Claims.ToList();
+        var claims = result.Principal.Claims.ToList();
 
         var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
         var principal = new ClaimsPrincipal(identity);

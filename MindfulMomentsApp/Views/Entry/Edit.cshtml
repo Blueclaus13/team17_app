@@ -1,0 +1,50 @@
+@model MindfulMomentsApp.Models.Entry
+
+@{
+    ViewData["Title"] = "Edit Entry";
+}
+
+<h2>Edit Entry</h2>
+
+<hr />
+
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit" method="post">
+            @Html.AntiForgeryToken()
+
+            <input type="hidden" asp-for="EntryId" />
+
+            <div class="form-group">
+                <label asp-for="Mood"></label>
+                <select asp-for="Mood"
+                        class="form-control"
+                        asp-items="Html.GetEnumSelectList<Mood>()">
+                </select>
+                <span asp-validation-for="Mood" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Activity"></label>
+                <select asp-for="Activity"
+                        class="form-control"
+                        asp-items="Html.GetEnumSelectList<Activity>()">
+                </select>
+                <span asp-validation-for="Activity" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Description"></label>
+                <textarea asp-for="Description"
+                          class="form-control"
+                          rows="5"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+
+            <br />
+
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+            <a href="/Journal" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>

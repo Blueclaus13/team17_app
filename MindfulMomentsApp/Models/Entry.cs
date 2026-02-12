@@ -1,25 +1,19 @@
-using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Data;
 using MindfulMomentsApp.Models.Enums;
+using System.ComponentModel.DataAnnotations;
 
-namespace MindfulMomentsApp.Models;
-
-public class Entry
+namespace MindfulMomentsApp.Models
 {
-    public int Id { get; set; }
-
-    [Display(Name = "Date")]
-    [DataType(DataType.Date)]
-    public DateTime Date { get; set; }
-
-    [Required]
-    public Moods Mood { get; set; }
-     [Required]
-    public Activities Activity { get; set; }
-
-    [Required]
-    [StringLength(150, MinimumLength = 3)]
-    public string? Description { get; set; }
+    public class Entry
+    {
+        public int EntryId { get; set; }
+        public int? JournalId { get; set; }
+        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
+        public DateTime? UpdatedDate { get; set; }
+        [Required(ErrorMessage = "Please select a mood.")]
+        public Mood? Mood { get; set; }
+        [Required(ErrorMessage = "Please select an activity.")]
+        public Activity? Activity { get; set; }
+        [Required]
+        public string Description { get; set; } = string.Empty;
+    }
 }

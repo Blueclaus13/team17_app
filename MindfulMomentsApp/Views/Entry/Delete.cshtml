@@ -1,0 +1,45 @@
+@model MindfulMomentsApp.Models.Entry
+
+@{
+    ViewData["Title"] = "Delete Entry";
+}
+
+<h2>Delete Entry</h2>
+
+<h4>Are you sure you want to delete this entry?</h4>
+<hr />
+
+<div class="card shadow-sm mb-3">
+    <div class="card-body">
+
+        <h5 class="card-title">
+            Mood: @Model.Mood
+        </h5>
+
+        <h6 class="card-subtitle mb-2 text-muted">
+            @Model.CreatedDate.ToString("MMMM dd, yyyy")
+        </h6>
+
+        <p>
+            <strong>Activity:</strong> @Model.Activity
+        </p>
+
+        <p>
+            @Model.Description
+        </p>
+
+    </div>
+</div>
+
+<form asp-action="DeleteConfirmed" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="EntryId" />
+
+    <button type="submit" class="btn btn-danger">
+        Delete
+    </button>
+
+    <a asp-action="Index" class="btn btn-secondary">
+        Cancel
+    </a>
+</form>

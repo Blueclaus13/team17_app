@@ -36,7 +36,7 @@ We have established a unified **"Journal with Pink Colors"** theme to ensure a c
     * Displays user profile information (Name, Email, and Profile Picture) retrieved via Google Claims.
 
 ## Technology Stack
-* **Framework:** ASP.NET Core MVC (.NET 10)
+* **Framework:** ASP.NET Core MVC (.NET 9.0)
 * **Authentication:** Google OAuth 2.0
 * **Language:** C#
 * **Frontend:** Razor Views (HTML/CSS/Bootstrap)

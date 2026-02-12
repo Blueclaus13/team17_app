@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using MindfulMomentsApp.Data;
 using MindfulMomentsApp.Models;
 using System.Security.Claims;
 
@@ -10,6 +12,12 @@ namespace MindfulMomentsApp.Controllers;
 
 public class AccountController : Controller
 {
+    private readonly AppDbContext _context;
+
+    public AccountController(AppDbContext context)
+    {
+        _context = context;
+    }
     public IActionResult Index()
     {
         if (User.Identity != null && User.Identity.IsAuthenticated)

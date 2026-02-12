@@ -1,133 +1,191 @@
 using Microsoft.AspNetCore.Mvc;
 using MindfulMomentsApp.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using MindfulMomentsApp.Data;
-using System.Text.Json;
-using System.Text.Json.Serialization;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MindfulMomentsApp.Controllers
-{   
-
+{
+    [Authorize]
     public class EntryController : Controller
     {
-         private readonly AppDbContext _context;
+        private readonly AppDbContext _context;
 
         public EntryController(AppDbContext context)
         {
             _context = context;
         }
 
-         // GET: /Dashboard
-        public IActionResult Dashboard()
-            {
-                return View();
-            }
-
-
-        // GET: /Journal/Details/1
-        public IActionResult Details(int? id)
-            {
-                // if (id == null)
-                // {
-                //     return NotFound();
-                // }
-
-                // var entry = _context.Entries.Find(id);
-                // if (entry == null)
-                // {
-                //     return NotFound();
-                // }
-                 return View();
-            }       
-
-        // GET: /AddEntry
         public IActionResult Create()
-            {
-                return View(new Entry());
-            }
+        {
+            return View();
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("EntryId,JournalId,Mood,CreatedDate, UpdatedDate, Activity, Description")] Entry entry)
+        public async Task<IActionResult> Create(Entry entry)
         {
-            if (!ModelState.IsValid)
+            var journalId = await GetCurrentUserJournalIdAsync();
+            if (journalId == null)
             {
-                foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
-                    {
-                        Console.WriteLine(error.ErrorMessage);
-                        
-                    }
+                ModelState.AddModelError(string.Empty, "No journal is associated with the current user.");
                 return View(entry);
             }
 
+            if (!ModelState.IsValid)
+            {
+                return View(entry);
+            }
+
+            entry.JournalId = journalId.Value;
             entry.CreatedDate = DateTime.UtcNow;
             entry.UpdatedDate = null;
-            Console.WriteLine(JsonSerializer.Serialize(entry, new JsonSerializerOptions
-                {
-                    WriteIndented = true,
-                    Converters = { new JsonStringEnumConverter() }
 
-                }));
-            // _context.Add(entry);
-            // await _context.SaveChangesAsync();
+            _context.Add(entry);
+            await _context.SaveChangesAsync();
             return Redirect("/Journal");
         }
 
-        
-        // GET: Journal/Edit/1
-         //Update Entries
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Entry entry)
-            {
-                if (id != entry.EntryId)
-                {
-                    return BadRequest();
-                }
-
-                if (!ModelState.IsValid)
-                {
-                    return View(entry);
-                }
-
-                try
-                {
-                    entry.UpdatedDate = DateTime.UtcNow;
-
-                    _context.Update(entry);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!_context.Entries.Any(e => e.EntryId == id))
-                        return NotFound();
-                    else
-                        throw;
-                }
-
-                return Redirect("/Journal");
-        }
-
-       
-       //GET: Journal/Delete/1
-       //Delete Entries
-       public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
+            var journalId = await GetCurrentUserJournalIdAsync();
+
             var entry = await _context.Entries
-                .FirstOrDefaultAsync(m => m.EntryId == id);
+                .FirstOrDefaultAsync(e => e.EntryId == id && e.JournalId == journalId);
             if (entry == null)
             {
                 return NotFound();
             }
 
-             return View();
+            return View(entry);
         }
-        
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, Entry entry)
+        {
+            if (id != entry.EntryId)
+            {
+                return NotFound();
+            }
+
+            var journalId = await GetCurrentUserJournalIdAsync();
+            if (journalId == null)
+            {
+                return NotFound();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(entry);
+            }
+
+            try
+            {
+                entry.JournalId = journalId.Value;
+                entry.UpdatedDate = DateTime.UtcNow;
+
+                _context.Update(entry);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!EntryExists(entry.EntryId))
+                {
+                    return NotFound();
+                }
+
+                throw;
+            }
+
+            return Redirect("/Journal");
+        }
+
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var journalId = await GetCurrentUserJournalIdAsync();
+
+            var entry = await _context.Entries
+                .FirstOrDefaultAsync(m => m.EntryId == id && m.JournalId == journalId);
+            if (entry == null)
+            {
+                return NotFound();
+            }
+
+            return View(entry);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var journalId = await GetCurrentUserJournalIdAsync();
+
+            var entry = await _context.Entries
+                .FirstOrDefaultAsync(e => e.EntryId == id && e.JournalId == journalId);
+            if (entry != null)
+            {
+                _context.Entries.Remove(entry);
+                await _context.SaveChangesAsync();
+            }
+
+            return Redirect("/Journal");
+        }
+
+        private bool EntryExists(int id)
+        {
+            return _context.Entries.Any(e => e.EntryId == id);
+        }
+
+        private async Task<int?> GetCurrentUserJournalIdAsync()
+        {
+            var externalId = User.FindFirstValue(ClaimTypes.NameIdentifier)
+                             ?? User.FindFirstValue(ClaimTypes.Name);
+
+            if (string.IsNullOrEmpty(externalId))
+            {
+                return null;
+            }
+
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.GoogleId == externalId || u.Email == externalId);
+
+            if (user == null)
+            {
+                return null;
+            }
+
+            var journal = await _context.Journals
+                .FirstOrDefaultAsync(j => j.UserId == user.UserId);
+
+            if (journal == null)
+            {
+                var journalName = string.IsNullOrWhiteSpace(user.FirstName)
+                    ? "My Journal"
+                    : $"{user.FirstName}'s Journal";
+
+                journal = new Journal
+                {
+                    UserId = user.UserId,
+                    JournalName = journalName
+                };
+
+                _context.Journals.Add(journal);
+                await _context.SaveChangesAsync();
+            }
+
+            return journal.JournalId;
+        }
     }
 }

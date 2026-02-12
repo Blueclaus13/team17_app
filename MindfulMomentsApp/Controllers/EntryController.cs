@@ -57,7 +57,6 @@ namespace MindfulMomentsApp.Controllers
                 foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
                     {
                         Console.WriteLine(error.ErrorMessage);
-
                     }
                 return View(entry);
             }
@@ -74,7 +73,6 @@ namespace MindfulMomentsApp.Controllers
             // await _context.SaveChangesAsync();
             return Redirect("/Journal");
         }
-
 
         // GET: Journal/Edit/1
          //Update Entries
@@ -109,7 +107,6 @@ namespace MindfulMomentsApp.Controllers
 
                 return Redirect("/Journal");
         }
-
 
        //GET: Journal/Delete/1
        //Delete Entries

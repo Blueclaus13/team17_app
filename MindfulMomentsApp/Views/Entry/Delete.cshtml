@@ -33,13 +33,13 @@
 
 <form asp-action="DeleteConfirmed" method="post">
     @Html.AntiForgeryToken()
-    <input type="hidden" asp-for="EntryId" />
+    <input type="hidden" name="entryId" value="@Model.EntryId" />
 
     <button type="submit" class="btn btn-danger">
         Delete
     </button>
 
-    <a asp-action="Index" class="btn btn-secondary">
+    <a href="/Journal" class="btn btn-secondary">
         Cancel
     </a>
 </form>

@@ -10,7 +10,7 @@ namespace MindfulMomentsApp.Data
 
     public DbSet<User> Users { get; set; }
     public DbSet<Journal> Journals { get; set; }
-    public DbSet<Entry> Entries { get; set; }
+    public DbSet<Entry> Entries { get; set; } = default!; // added default! to suppress nullable warning
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

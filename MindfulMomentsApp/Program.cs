@@ -13,6 +13,7 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddHttpClient();
+
 //sing in configuration for Google Authentication
 builder.Services.AddAuthentication(options =>
 {

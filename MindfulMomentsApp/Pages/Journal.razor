@@ -1,7 +1,10 @@
 @page "/Journal"
 @using MindfulMomentsApp.Models
+@using Microsoft.EntityFrameworkCore
 @using MindfulMomentsApp.Views.Shared.Components
-@using MindfulMomentsApp.Models.Enums
+
+
+@inject MindfulMomentsApp.Data.AppDbContext Db
 
 <PageTitle>Journal</PageTitle>
 
@@ -13,27 +16,25 @@
     <a href="/Entry/Create" class="btn btn-primary">Create New Entry</a>
 </p>
 
-@foreach (var entry in Entries)
+@if (Entries.Count == 0)
 {
-    <EntryCard Entry="entry" />
+    <p>No entries yet.</p>
+}
+else
+{
+    @foreach (var entry in Entries)
+    {
+        <EntryCard Entry="entry" />
+    }
 }
 
 @code {
     private List<Entry> Entries = new();
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        // Example test data
-        Entries = new List<Entry>
-        {
-            new Entry
-            {
-                Mood = Mood.Happy,
-                Activity = Activity.Working,
-                Description = "Great workout today!",
-                CreatedDate = DateTime.Now
-            }
-        };
+        Entries = await Db.Entries
+            .OrderByDescending(e => e.CreatedDate)
+            .ToListAsync();
     }
-   
 }

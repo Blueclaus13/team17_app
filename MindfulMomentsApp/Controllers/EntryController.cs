@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace MindfulMomentsApp.Controllers
 {
+    // Reqires user to be authenticated to access any actions in this controller
     [Authorize]
     public class EntryController : Controller
     {
@@ -67,37 +68,38 @@ namespace MindfulMomentsApp.Controllers
             return View(entry);
         }
 
+        // POST: /Entry/Edit
         [HttpPost]
-[ValidateAntiForgeryToken]
-public async Task<IActionResult> Edit(int id, Entry entry)
-{
-    if (id != entry.EntryId)
-        return NotFound();
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, Entry entry)
+        {
+            if (id != entry.EntryId)
+                return NotFound();
 
-    var journalId = await GetCurrentUserJournalIdAsync();
-    if (journalId == null)
-        return NotFound();
+            var journalId = await GetCurrentUserJournalIdAsync();
+            if (journalId == null)
+                return NotFound();
 
-    if (!ModelState.IsValid)
-        return View(entry);
+            if (!ModelState.IsValid)
+                return View(entry);
 
-    var existing = await _context.Entries
-        .FirstOrDefaultAsync(e => e.EntryId == id && e.JournalId == journalId.Value);
+            var existing = await _context.Entries
+                .FirstOrDefaultAsync(e => e.EntryId == id && e.JournalId == journalId.Value);
 
-    if (existing == null)
-        return NotFound();
+            if (existing == null)
+                return NotFound();
 
-    existing.Mood = entry.Mood;
-    existing.Activity = entry.Activity;
-    existing.Description = entry.Description;   // ✅ DB will update this
-    existing.UpdatedDate = DateTime.UtcNow;
+            existing.Mood = entry.Mood;
+            existing.Activity = entry.Activity;
+            existing.Description = entry.Description;   // DB will update this
+            existing.UpdatedDate = DateTime.UtcNow;
 
-    await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
 
-    return Redirect("/Journal");
-}
+            return Redirect("/Journal");
+        }
 
-
+        //GET: /Entry/Delete
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -112,7 +114,7 @@ public async Task<IActionResult> Edit(int id, Entry entry)
 
             return View(entry);
         }
-
+        // POST: /Entry/Delete/DeleteConfirmed
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -130,6 +132,7 @@ public async Task<IActionResult> Edit(int id, Entry entry)
             return Redirect("/Journal");
         }
 
+        //Post: /Entry/Details
         private bool EntryExists(int id)
         {
             return _context.Entries.Any(e => e.EntryId == id);

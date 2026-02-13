@@ -1,8 +1,8 @@
 @page "/Journal"
 @using MindfulMomentsApp.Models
+@using MindfulMomentsApp.Models.Enums
 @using Microsoft.EntityFrameworkCore
 @using MindfulMomentsApp.Views.Shared.Components
-
 
 @inject MindfulMomentsApp.Data.AppDbContext Db
 
@@ -10,19 +10,64 @@
 
 <h1>Journal</h1>
 
-<p>This is a place to display a list of Entries</p>
 
-<p>
+<input class="form-control mb-2"
+       placeholder="Search description..."
+       @bind="SearchText"
+       @bind:event="oninput" />
+
+<div class="row g-2 mb-3">
+    <div class="col-md-3">
+        <select class="form-select" @bind="SelectedMoodText">
+            <option value="">All moods</option>
+            @foreach (var m in Enum.GetNames(typeof(Mood)))
+            {
+                <option value="@m">@m</option>
+            }
+        </select>
+    </div>
+
+    <div class="col-md-3">
+        <select class="form-select" @bind="SelectedActivityText">
+            <option value="">All activities</option>
+            @foreach (var a in Enum.GetNames(typeof(Activity)))
+            {
+                <option value="@a">@a</option>
+            }
+        </select>
+    </div>
+
+    <div class="col-md-3">
+        <div class="form-check mt-2">
+            <input class="form-check-input" type="checkbox" id="editedOnly" @bind="EditedOnly" />
+            <label class="form-check-label" for="editedOnly">
+                Edited only
+            </label>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <button class="btn btn-outline-light w-100" type="button" @onclick="ClearFilters">
+            Clear
+        </button>
+    </div>
+    <p>
     <a href="/Entry/Create" class="btn btn-primary">Create New Entry</a>
 </p>
+
+</div>
 
 @if (Entries.Count == 0)
 {
     <p>No entries yet.</p>
 }
+else if (!FilteredEntries.Any())
+{
+    <p>No entries match your filters.</p>
+}
 else
 {
-    @foreach (var entry in Entries)
+    @foreach (var entry in FilteredEntries)
     {
         <EntryCard Entry="entry" />
     }
@@ -31,10 +76,58 @@ else
 @code {
     private List<Entry> Entries = new();
 
+    // Filters
+    private string SearchText = "";
+    private string SelectedMoodText = "";
+    private string SelectedActivityText = "";
+    private bool EditedOnly = false;
+
     protected override async Task OnInitializedAsync()
     {
         Entries = await Db.Entries
             .OrderByDescending(e => e.CreatedDate)
             .ToListAsync();
+    }
+
+    private IEnumerable<Entry> FilteredEntries
+    {
+        get
+        {
+            IEnumerable<Entry> q = Entries;
+
+            if (!string.IsNullOrWhiteSpace(SearchText))
+            {
+                q = q.Where(e =>
+                    (e.Description ?? "")
+                    .Contains(SearchText, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (!string.IsNullOrWhiteSpace(SelectedMoodText) &&
+                Enum.TryParse<Mood>(SelectedMoodText, out var mood))
+            {
+                q = q.Where(e => e.Mood == mood);
+            }
+
+            if (!string.IsNullOrWhiteSpace(SelectedActivityText) &&
+                Enum.TryParse<Activity>(SelectedActivityText, out var activity))
+            {
+                q = q.Where(e => e.Activity == activity);
+            }
+
+            if (EditedOnly)
+            {
+                q = q.Where(e => e.UpdatedDate != null);
+            }
+
+            return q;
+        }
+    }
+
+    private void ClearFilters()
+    {
+        SearchText = "";
+        SelectedMoodText = "";
+        SelectedActivityText = "";
+        EditedOnly = false;
     }
 }

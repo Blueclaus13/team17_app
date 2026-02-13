@@ -68,45 +68,35 @@ namespace MindfulMomentsApp.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Entry entry)
-        {
-            if (id != entry.EntryId)
-            {
-                return NotFound();
-            }
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> Edit(int id, Entry entry)
+{
+    if (id != entry.EntryId)
+        return NotFound();
 
-            var journalId = await GetCurrentUserJournalIdAsync();
-            if (journalId == null)
-            {
-                return NotFound();
-            }
+    var journalId = await GetCurrentUserJournalIdAsync();
+    if (journalId == null)
+        return NotFound();
 
-            if (!ModelState.IsValid)
-            {
-                return View(entry);
-            }
+    if (!ModelState.IsValid)
+        return View(entry);
 
-            try
-            {
-                entry.JournalId = journalId.Value;
-                entry.UpdatedDate = DateTime.UtcNow;
+    var existing = await _context.Entries
+        .FirstOrDefaultAsync(e => e.EntryId == id && e.JournalId == journalId.Value);
 
-                _context.Update(entry);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!EntryExists(entry.EntryId))
-                {
-                    return NotFound();
-                }
+    if (existing == null)
+        return NotFound();
 
-                throw;
-            }
+    existing.Mood = entry.Mood;
+    existing.Activity = entry.Activity;
+    existing.Description = entry.Description;   // ✅ DB will update this
+    existing.UpdatedDate = DateTime.UtcNow;
 
-            return Redirect("/Journal");
-        }
+    await _context.SaveChangesAsync();
+
+    return Redirect("/Journal");
+}
+
 
         public async Task<IActionResult> Delete(int? id)
         {

@@ -1,133 +1,98 @@
 @page "/Journal"
 @using MindfulMomentsApp.Models
-@using MindfulMomentsApp.Models.Enums
-@using Microsoft.EntityFrameworkCore
 @using MindfulMomentsApp.Views.Shared.Components
-
-@inject MindfulMomentsApp.Data.AppDbContext Db
+@using MindfulMomentsApp.Data
+@using Microsoft.EntityFrameworkCore
+@using System.Security.Claims
+@inject AppDbContext Db
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <PageTitle>Journal</PageTitle>
 
 <h1>Journal</h1>
 
-
-<input class="form-control mb-2"
-       placeholder="Search description..."
-       @bind="SearchText"
-       @bind:event="oninput" />
-
-<div class="row g-2 mb-3">
-    <div class="col-md-3">
-        <select class="form-select" @bind="SelectedMoodText">
-            <option value="">All moods</option>
-            @foreach (var m in Enum.GetNames(typeof(Mood)))
-            {
-                <option value="@m">@m</option>
-            }
-        </select>
-    </div>
-
-    <div class="col-md-3">
-        <select class="form-select" @bind="SelectedActivityText">
-            <option value="">All activities</option>
-            @foreach (var a in Enum.GetNames(typeof(Activity)))
-            {
-                <option value="@a">@a</option>
-            }
-        </select>
-    </div>
-
-    <div class="col-md-3">
-        <div class="form-check mt-2">
-            <input class="form-check-input" type="checkbox" id="editedOnly" @bind="EditedOnly" />
-            <label class="form-check-label" for="editedOnly">
-                Edited only
-            </label>
-        </div>
-    </div>
-
-    <div class="col-md-3">
-        <button class="btn btn-outline-light w-100" type="button" @onclick="ClearFilters">
-            Clear
-        </button>
-    </div>
-    <p>
-    <a href="/Entry/Create" class="btn btn-primary">Create New Entry</a>
-</p>
-
-</div>
-
-@if (Entries.Count == 0)
+@if (!isLoaded)
 {
-    <p>No entries yet.</p>
+    <p>Loading your entries...</p>
 }
-else if (!FilteredEntries.Any())
+else if (!isAuthenticated)
 {
-    <p>No entries match your filters.</p>
+    <div role="alert">
+        <h4 class="alert-heading">Please Sign In</h4>
+        <p>You need to be logged in to view and create journal entries.</p>
+        <hr>
+        <p class="mb-0">
+            <a href="/Account/SignIn" class="btn btn-primary">Sign In</a>
+        </p>
+    </div>
 }
 else
 {
-    @foreach (var entry in FilteredEntries)
+    <p>
+        <a href="/Entry/Create" class="btn btn-primary">Create New Entry</a>
+    </p>
+
+    @if (Entries.Count == 0)
     {
-        <EntryCard Entry="entry" />
+        <p>No entries found. Create your first entry above.</p>
+    }
+    else
+    {
+        @foreach (var entry in Entries)
+        {
+            <EntryCard Entry="entry" />
+        }
     }
 }
 
 @code {
     private List<Entry> Entries = new();
-
-    // Filters
-    private string SearchText = "";
-    private string SelectedMoodText = "";
-    private string SelectedActivityText = "";
-    private bool EditedOnly = false;
+    private bool isLoaded;
+    private bool isAuthenticated;
 
     protected override async Task OnInitializedAsync()
     {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        isAuthenticated = user.Identity?.IsAuthenticated ?? false;
+
+        if (!isAuthenticated)
+        {
+            isLoaded = true;
+            return;
+        }
+
+        var externalId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                 ?? user.Identity?.Name;
+
+        if (string.IsNullOrEmpty(externalId))
+        {
+            isLoaded = true;
+            return;
+        }
+
+        var dbUser = await Db.Users
+            .FirstOrDefaultAsync(u => u.GoogleId == externalId || u.Email == externalId);
+        if (dbUser == null)
+        {
+            isLoaded = true;
+            return;
+        }
+
+        var journal = await Db.Journals.FirstOrDefaultAsync(j => j.UserId == dbUser.UserId);
+        if (journal == null)
+        {
+            isLoaded = true;
+            return;
+        }
+
         Entries = await Db.Entries
+            .Where(e => e.JournalId == journal.JournalId)
             .OrderByDescending(e => e.CreatedDate)
             .ToListAsync();
+
+        isLoaded = true;
     }
 
-    private IEnumerable<Entry> FilteredEntries
-    {
-        get
-        {
-            IEnumerable<Entry> q = Entries;
-
-            if (!string.IsNullOrWhiteSpace(SearchText))
-            {
-                q = q.Where(e =>
-                    (e.Description ?? "")
-                    .Contains(SearchText, StringComparison.OrdinalIgnoreCase));
-            }
-
-            if (!string.IsNullOrWhiteSpace(SelectedMoodText) &&
-                Enum.TryParse<Mood>(SelectedMoodText, out var mood))
-            {
-                q = q.Where(e => e.Mood == mood);
-            }
-
-            if (!string.IsNullOrWhiteSpace(SelectedActivityText) &&
-                Enum.TryParse<Activity>(SelectedActivityText, out var activity))
-            {
-                q = q.Where(e => e.Activity == activity);
-            }
-
-            if (EditedOnly)
-            {
-                q = q.Where(e => e.UpdatedDate != null);
-            }
-
-            return q;
-        }
-    }
-
-    private void ClearFilters()
-    {
-        SearchText = "";
-        SelectedMoodText = "";
-        SelectedActivityText = "";
-        EditedOnly = false;
-    }
 }

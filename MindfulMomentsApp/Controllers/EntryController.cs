@@ -22,6 +22,7 @@ namespace MindfulMomentsApp.Controllers
             return View();
         }
 
+        // POST: /Entry/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Entry entry)
@@ -110,18 +111,14 @@ namespace MindfulMomentsApp.Controllers
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
-            {
                 return NotFound();
-            }
 
             var journalId = await GetCurrentUserJournalIdAsync();
 
             var entry = await _context.Entries
                 .FirstOrDefaultAsync(m => m.EntryId == id && m.JournalId == journalId);
             if (entry == null)
-            {
                 return NotFound();
-            }
 
             return View(entry);
         }

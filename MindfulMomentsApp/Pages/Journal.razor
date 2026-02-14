@@ -37,11 +37,16 @@ else
         <p>No entries found. Create your first entry above.</p>
     }
     else
-    {
-        @foreach (var entry in Entries)
-        {
-            <EntryCard Entry="entry" />
-        }
+    {   <div class="container">
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                @foreach (var entry in Entries)
+                {
+                    <div class="col">
+                        <EntryCard Entry="entry" />
+                    </div>
+                }
+            </div>
+        </div>
     }
 }
 

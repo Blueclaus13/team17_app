@@ -1,7 +1,7 @@
 @using MindfulMomentsApp.Models
 
-<div class="card mb-3 shadow-sm">
-    <div class="card-body">
+<div class="card h-100 shadow-sm d-flex flex-column">
+    <div class="card-body d-flex flex-column @Entry.GetMoodColor()">
         <h4 class="card-title">
             @Entry.Mood
         </h4>
@@ -14,12 +14,12 @@
             <strong>Activity:</strong> @Entry.Activity
         </p>
 
-        <p class="card-text">
+        <p class="card-text description-truncate">
             @Entry.Description
         </p>
 
         <!-- Buttons -->
-        <div class="mt-3">
+        <div class="mt-auto pt-3">
             <!-- Delete Button  -->
              <a href="/Entry/Delete/@Entry.EntryId"
                 class="btn btn-danger btn-sm me-2">

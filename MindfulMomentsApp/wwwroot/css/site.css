@@ -1,3 +1,17 @@
+.mood-sad {background-color: #cadaf3;}
+.mood-angry {background-color: #fab9b9;}
+.mood-happy {background-color: #fff6cf;}
+.mood-fear {background-color: #decfff;}
+.mood-anxiety {background-color: #f2ccb4;}
+.mood-tired {background-color: #dbdbdb;}
+.mood-shy {background-color: #ffe5e5;}
+.mood-surprise {background-color: #e5feff;}
+.mood-bored {background-color: #ebdecc;}
+.mood-inlove {background-color: #ffc5e0;}
+.mood-peace {background-color: #ffffff;}
+.mood-disgust {background-color: #cbf2ca;}
+.mood-default {background-color: #ffffff;}
+
 body {
   background-color: #fffaf1;
 }
@@ -84,4 +98,13 @@ body {
 
 form div{
   margin-bottom: 1rem;
+}
+
+/* for entry height */
+.description-truncate {
+    display: -webkit-box;
+    -webkit-line-clamp: 7;
+    -webkit-box-orient: vertical;  
+    overflow: hidden;
+    text-overflow: ellipsis;
 }

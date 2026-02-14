@@ -16,7 +16,7 @@ namespace MindfulMomentsApp.Controllers
         {
             _context = context;
         }
-
+        
         public IActionResult Create()
         {
             return View();

@@ -15,6 +15,9 @@ namespace MindfulMomentsApp.Data
     {
       modelBuilder.Entity<User>(entity =>
       {
+        entity.HasIndex(e => e.Email).IsUnique();
+
+       // entity.Property(e => e.PasswordHash).HasMaxLength(255); //dotnet add package BCrypt.Net-Next
         entity.HasKey(e => e.UserId);
         entity.Property(e => e.GoogleId).HasMaxLength(255);
         entity.Property(e => e.FirstName).HasMaxLength(100);

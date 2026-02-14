@@ -146,43 +146,51 @@ namespace MindfulMomentsApp.Controllers
         }
 
         private async Task<int?> GetCurrentUserJournalIdAsync()
+    {
+        var identifier = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (string.IsNullOrEmpty(identifier))
+            return null;
+
+        User? user = null;
+
+        // If identifier is a GUID → local account
+        if (Guid.TryParse(identifier, out var userGuid))
         {
-            var externalId = User.FindFirstValue(ClaimTypes.NameIdentifier)
-                             ?? User.FindFirstValue(ClaimTypes.Name);
-
-            if (string.IsNullOrEmpty(externalId))
-            {
-                return null;
-            }
-
-            var user = await _context.Users
-                .FirstOrDefaultAsync(u => u.GoogleId == externalId || u.Email == externalId);
-
-            if (user == null)
-            {
-                return null;
-            }
-
-            var journal = await _context.Journals
-                .FirstOrDefaultAsync(j => j.UserId == user.UserId);
-
-            if (journal == null)
-            {
-                var journalName = string.IsNullOrWhiteSpace(user.FirstName)
-                    ? "My Journal"
-                    : $"{user.FirstName}'s Journal";
-
-                journal = new Journal
-                {
-                    UserId = user.UserId,
-                    JournalName = journalName
-                };
-
-                _context.Journals.Add(journal);
-                await _context.SaveChangesAsync();
-            }
-
-            return journal.JournalId;
+            user = await _context.Users
+                .FirstOrDefaultAsync(u => u.UserId == userGuid);
         }
+        else
+        {
+            // Otherwise assume Google account
+            user = await _context.Users
+                .FirstOrDefaultAsync(u =>
+                    u.GoogleId == identifier ||
+                    u.Email == identifier);
+        }
+
+        if (user == null)
+            return null;
+
+        var journal = await _context.Journals
+            .FirstOrDefaultAsync(j => j.UserId == user.UserId);
+
+        if (journal == null)
+        {
+            journal = new Journal
+            {
+                UserId = user.UserId,
+                JournalName = string.IsNullOrWhiteSpace(user.FirstName)
+                    ? "My Journal"
+                    : $"{user.FirstName}'s Journal"
+            };
+
+            _context.Journals.Add(journal);
+            await _context.SaveChangesAsync();
+        }
+
+        return journal.JournalId;
+    }
+        
     }
 }

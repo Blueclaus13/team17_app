@@ -31,10 +31,10 @@ namespace MindfulMomentsApp.Data
       {
         entity.HasKey(e => e.JournalId);
         entity.Property(e => e.JournalName).HasMaxLength(200).IsRequired();
-        entity.HasOne<User>()
-                  .WithMany()
-                  .HasForeignKey(e => e.UserId)
-                  .OnDelete(DeleteBehavior.Cascade);
+        entity.HasOne(j => j.User)
+          .WithOne(u => u.Journal)
+          .HasForeignKey<Journal>(j => j.UserId)
+          .OnDelete(DeleteBehavior.Cascade);
       });
 
       modelBuilder.Entity<Entry>(entity =>
@@ -45,10 +45,10 @@ namespace MindfulMomentsApp.Data
           .HasConversion<string>();
         entity.Property(e => e.Activity)
           .HasConversion<string>();
-        entity.HasOne(e => e.Journal)
-                  .WithMany(j => j.Entries)
-                  .HasForeignKey(e => e.JournalId)
-                  .OnDelete(DeleteBehavior.Cascade);
+          entity.HasOne(e => e.Journal)
+          .WithMany(j => j.Entries)
+          .HasForeignKey(e => e.JournalId)
+          .OnDelete(DeleteBehavior.Cascade);
 
         entity.ToTable("Entries", tb => tb.HasCheckConstraint(
         "CK_UpdatedDate_SameDay",

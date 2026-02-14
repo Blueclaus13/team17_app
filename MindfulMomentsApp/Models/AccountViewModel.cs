@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.SignalR;
-
 namespace MindfulMomentsApp.Models;
 
 public class AccountViewModel
@@ -13,5 +11,6 @@ public class AccountViewModel
   public DateTime JoinDate { get; set; }
   public int TotalEntries { get; set; }
   public string LastEntryDate { get; set; } = "No entries yet";
+  public int WeeklyStreak { get; set;}
 
 }

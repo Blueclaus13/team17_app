@@ -16,7 +16,7 @@ namespace MindfulMomentsApp.Controllers
         {
             _context = context;
         }
-        
+
         public IActionResult Create()
         {
             return View();
@@ -30,6 +30,10 @@ namespace MindfulMomentsApp.Controllers
             var journalId = await GetCurrentUserJournalIdAsync();
             if (journalId == null)
             {
+                foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+                    {
+                        Console.WriteLine(error.ErrorMessage);
+                    }
                 ModelState.AddModelError(string.Empty, "No journal is associated with the current user.");
                 return View(entry);
             }
@@ -191,6 +195,6 @@ namespace MindfulMomentsApp.Controllers
 
         return journal.JournalId;
     }
-        
+
     }
 }

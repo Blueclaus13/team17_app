@@ -3,38 +3,103 @@
 @attribute [Authorize]
 @using MindfulMomentsApp.Models
 @using MindfulMomentsApp.Views.Shared.Components
-@using MindfulMomentsApp.Models.Enums
+@using MindfulMomentsApp.Data
+@using Microsoft.EntityFrameworkCore
+@using System.Security.Claims
+@inject AppDbContext Db
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <PageTitle>Journal</PageTitle>
 
 <h1>Journal</h1>
 
-<p>This is a place to display a list of Entries</p>
-
-<p>
-    <a href="/Entry/Create" class="btn btn-primary">Create New Entry</a>
-</p>
-
-@foreach (var entry in Entries)
+@if (!isLoaded)
 {
-    <EntryCard Entry="entry" />
+    <p>Loading your entries...</p>
+}
+else if (!isAuthenticated)
+{
+    <div role="alert">
+        <h4 class="alert-heading">Please Sign In</h4>
+        <p>You need to be logged in to view and create journal entries.</p>
+        <hr>
+        <p class="mb-0">
+            <a href="/Account/SignIn" class="btn btn-primary">Sign In</a>
+        </p>
+    </div>
+}
+else
+{
+    <p>
+        <a href="/Entry/Create" class="btn btn-primary">Create New Entry</a>
+    </p>
+
+    @if (Entries.Count == 0)
+    {
+        <p>No entries found. Create your first entry above.</p>
+    }
+    else
+    {   <div class="container">
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                @foreach (var entry in Entries)
+                {
+                    <div class="col">
+                        <EntryCard Entry="entry" />
+                    </div>
+                }
+            </div>
+        </div>
+    }
 }
 
 @code {
     private List<Entry> Entries = new();
+    private bool isLoaded;
+    private bool isAuthenticated;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        // Example test data
-        Entries = new List<Entry>
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        isAuthenticated = user.Identity?.IsAuthenticated ?? false;
+
+        if (!isAuthenticated)
         {
-            new Entry
-            {
-                Mood = Mood.Happy,
-                Activity = Activity.Working,
-                Description = "Great workout today!",
-                CreatedDate = DateTime.Now
-            }
-        };
+            isLoaded = true;
+            return;
+        }
+
+        var externalId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                 ?? user.Identity?.Name;
+
+        if (string.IsNullOrEmpty(externalId))
+        {
+            isLoaded = true;
+            return;
+        }
+
+        var dbUser = await Db.Users
+            .FirstOrDefaultAsync(u => u.GoogleId == externalId || u.Email == externalId);
+        if (dbUser == null)
+        {
+            isLoaded = true;
+            return;
+        }
+
+        var journal = await Db.Journals.FirstOrDefaultAsync(j => j.UserId == dbUser.UserId);
+        if (journal == null)
+        {
+            isLoaded = true;
+            return;
+        }
+
+        Entries = await Db.Entries
+            .Where(e => e.JournalId == journal.JournalId)
+            .OrderByDescending(e => e.CreatedDate)
+            .ToListAsync();
+
+        isLoaded = true;
     }
+
 }

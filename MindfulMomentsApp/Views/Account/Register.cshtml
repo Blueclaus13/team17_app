@@ -1,0 +1,25 @@
+@{
+    ViewData["Title"] = "Register";
+}
+
+<h2>Create an account</h2>
+
+@if (ViewBag.Error != null)
+{
+    <p style="color:red">@ViewBag.Error</p>
+}
+
+<form method="post" action="/Account/Register">
+    @Html.AntiForgeryToken()
+
+    <input type="text" name="firstName" placeholder="First name" class="form-control" /><br />
+    <input type="text" name="lastName" placeholder="Last name" class="form-control" /><br />
+
+    <input type="email" name="email" placeholder="Email" required class="form-control" /><br />
+    <input type="password" name="password" placeholder="Password" required class="form-control" /><br />
+
+    <button type="submit" class="btn">Sign Up</button>
+</form>
+
+<hr />
+<a class="btn" href="/Account/GoogleLogin">Sign up with Google</a>

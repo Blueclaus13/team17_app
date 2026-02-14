@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MindfulMomentsApp.Data;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MindfulMomentsApp.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260212080410_AddEntries")]
+    partial class AddEntries
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -42,7 +45,10 @@ namespace MindfulMomentsApp.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("character varying(1000)");
 
-                    b.Property<int>("JournalId")
+                    b.Property<int?>("JournalId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("JournalId1")
                         .HasColumnType("integer");
 
                     b.Property<string>("Mood")
@@ -55,6 +61,8 @@ namespace MindfulMomentsApp.Migrations
                     b.HasKey("EntryId");
 
                     b.HasIndex("JournalId");
+
+                    b.HasIndex("JournalId1");
 
                     b.ToTable("Entries", null, t =>
                         {
@@ -121,21 +129,19 @@ namespace MindfulMomentsApp.Migrations
 
                     b.HasKey("UserId");
 
-                    b.HasIndex("Email")
-                        .IsUnique();
-
                     b.ToTable("Users");
                 });
 
             modelBuilder.Entity("MindfulMomentsApp.Models.Entry", b =>
                 {
-                    b.HasOne("MindfulMomentsApp.Models.Journal", "Journal")
-                        .WithMany("Entries")
+                    b.HasOne("MindfulMomentsApp.Models.Journal", null)
+                        .WithMany()
                         .HasForeignKey("JournalId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
-                    b.Navigation("Journal");
+                    b.HasOne("MindfulMomentsApp.Models.Journal", null)
+                        .WithMany("Entries")
+                        .HasForeignKey("JournalId1");
                 });
 
             modelBuilder.Entity("MindfulMomentsApp.Models.Journal", b =>

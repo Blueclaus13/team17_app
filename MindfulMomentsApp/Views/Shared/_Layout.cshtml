@@ -19,13 +19,18 @@
     <header>
         <nav class="navbar navbar-dark d-md-none p-3" style="background-color: #6d5440;">
             <div class="container-fluid">
+<<<<<<< HEAD
                 <a class="navbar-brand fw-bold" asp-controller="Home" asp-action="Index">MindfulMoments<span
                     class="fw-light opacity-75 fs-6"> @ViewData["Title"]</span>
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mobileMenu">
+=======
+                <a class="navbar-brand fw-bold" asp-controller="Home" asp-action="Index">MindfulMoments<span class="fw-light opacity-75 fs-6"> @ViewData["Title"]</span></a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mobileMenu" aria-controls="mobileMenu" aria-expanded="false" aria-label="Toggle Navigation">
+>>>>>>> main
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="collapse navbar-collapse" id="mobileMenu">
+                <div class="collapse navbar-collapse" id="mobileMenu" role="navigation">
                     <ul class="nav flex-column mt-3">
                         <li class="nav-item mb-2">
                             <a class="nav-link text-light" asp-controller="Home" asp-action="Index"><i class="fa-solid fa-house me-2"></i> Home</a>
@@ -55,7 +60,7 @@
         </nav>
 
         <div class="d-flex" id="wrapper">
-            <div class="bg-brown text-light d-none d-md-block sidebar-wrapper" style="background-color: #6d5440;">
+            <div class="bg-brown text-light d-none d-md-block sidebar-wrapper" style="background-color: #6d5440;" role="navigation" aria-label="Main Sidebar">
                 <div class="p-4">
                     <a class="navbar-brand text-light fs-4 fw-bold mb-4 d-block" asp-controller="Home"
                         asp-action="Index">MindfulMoments
@@ -117,9 +122,13 @@
 
     <footer class="border-top footer text-muted text-center">
         <div class="container">
+<<<<<<< HEAD
             &copy; 2026 - MindfulMomentsApp -
             <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy
             </a>
+=======
+            &copy; 2026 - MindfulMomentsApp - <a style="color: #705642 !important" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+>>>>>>> main
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

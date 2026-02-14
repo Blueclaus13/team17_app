@@ -11,6 +11,9 @@ using BCrypt.Net;
 
 namespace MindfulMomentsApp.Controllers;
 
+/// <summary>
+/// Handles user authentication and account management for both local and Google OAuth accounts.
+/// </summary>
 [Authorize]
 [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
 public class AccountController : Controller
@@ -21,6 +24,10 @@ public class AccountController : Controller
     {
         _context = context;
     }
+
+    /// <summary>
+    /// Displays the user account dashboard with profile information and journal statistics.
+    /// </summary>
     public async Task<IActionResult> Index()
     {
         var email = User.FindFirstValue(ClaimTypes.Email);
@@ -54,13 +61,19 @@ public class AccountController : Controller
         return View(model);
     }
 
+    /// <summary>
+    /// Displays the registration form for creating a new local account.
+    /// </summary>
     [AllowAnonymous]
     [HttpGet]
     public IActionResult Register()
     {
         return View();
     }
-    //Register new user with email and password
+
+    /// <summary>
+    /// Processes new user registration, hashes password with BCrypt, and automatically signs in the user.
+    /// </summary>
     [AllowAnonymous]
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -80,8 +93,8 @@ public class AccountController : Controller
             Email = email,
             FirstName = firstName?.Trim() ?? "",
             LastName = lastName?.Trim() ?? "",
-            Password = BCrypt.Net.BCrypt.HashPassword(password), // Hashing password added
-            GoogleId = "" // local account
+            Password = BCrypt.Net.BCrypt.HashPassword(password),
+            GoogleId = ""
         };
 
         _context.Users.Add(user);
@@ -92,7 +105,9 @@ public class AccountController : Controller
         return RedirectToAction("Index", "Home");
     }
 
-
+    /// <summary>
+    /// Displays the sign-in form for existing users.
+    /// </summary>
     [AllowAnonymous]
     [HttpGet]
     public IActionResult SignIn()
@@ -100,7 +115,9 @@ public class AccountController : Controller
         return View();
     }
 
-
+    /// <summary>
+    /// Authenticates user credentials using BCrypt password verification and creates authentication cookie.
+    /// </summary>
     [AllowAnonymous]
     [HttpPost]
     [ValidateAntiForgeryToken]
@@ -120,6 +137,9 @@ public class AccountController : Controller
         return RedirectToAction("Index", "Home");
     }
 
+    /// <summary>
+    /// Initiates the Google OAuth authentication flow.
+    /// </summary>
     [AllowAnonymous]
     public IActionResult GoogleLogin()
     {
@@ -129,6 +149,9 @@ public class AccountController : Controller
             GoogleDefaults.AuthenticationScheme);
     }
 
+    /// <summary>
+    /// Handles Google OAuth callback, creates or updates user in database, and signs them in.
+    /// </summary>
     [AllowAnonymous]
     public async Task<IActionResult> GoogleResponse()
     {
@@ -143,7 +166,6 @@ public class AccountController : Controller
         if (string.IsNullOrWhiteSpace(email))
             return RedirectToAction("SignIn");
 
-        // OPTIONAL but recommended: ensure user exists in DB
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
         if (user == null)
         {
@@ -152,7 +174,7 @@ public class AccountController : Controller
             user = new User
             {
                 Email = email,
-                FirstName = name,      // you can split later if you want
+                FirstName = name,
                 LastName = "",
                 Password = "",
                 GoogleId = authResult.Principal?.FindFirstValue(ClaimTypes.NameIdentifier) ?? ""
@@ -163,7 +185,6 @@ public class AccountController : Controller
         }
         else
         {
-            // keep GoogleId in sync
             var googleSub = authResult.Principal?.FindFirstValue(ClaimTypes.NameIdentifier) ?? "";
             if (!string.IsNullOrWhiteSpace(googleSub) && user.GoogleId != googleSub)
             {
@@ -177,13 +198,18 @@ public class AccountController : Controller
         return RedirectToAction("Index", "Home");
     }
 
-
+    /// <summary>
+    /// Signs out the current user and redirects to the sign-in page.
+    /// </summary>
     public async Task<IActionResult> Logout()
     {
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         return RedirectToAction("SignIn");
     }
 
+    /// <summary>
+    /// Creates standardized authentication cookie using email as the primary identifier for both local and Google accounts.
+    /// </summary>
     private async Task SignInUser(string email, string name, string? picture)
     {
         var claims = new List<Claim>

@@ -3,21 +3,25 @@ using MindfulMomentsApp.Models;
 
 namespace MindfulMomentsApp.Data
 {
+  /// <summary>
+  /// Database context for the Mindful Moments application, managing Users, Journals, and Entries.
+  /// </summary>
   public class AppDbContext : DbContext
   {
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
     public DbSet<User> Users { get; set; }
     public DbSet<Journal> Journals { get; set; }
-    public DbSet<Entry> Entries { get; set; } = default!; // added default! to suppress nullable warning
+    public DbSet<Entry> Entries { get; set; } = default!;
 
+    /// <summary>
+    /// Configures entity relationships and database constraints.
+    /// </summary>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
       modelBuilder.Entity<User>(entity =>
       {
         entity.HasIndex(e => e.Email).IsUnique();
-
-       // entity.Property(e => e.PasswordHash).HasMaxLength(255); //dotnet add package BCrypt.Net-Next
         entity.HasKey(e => e.UserId);
         entity.Property(e => e.GoogleId).HasMaxLength(255);
         entity.Property(e => e.FirstName).HasMaxLength(100);
@@ -45,10 +49,10 @@ namespace MindfulMomentsApp.Data
           .HasConversion<string>();
         entity.Property(e => e.Activity)
           .HasConversion<string>();
-          entity.HasOne(e => e.Journal)
-          .WithMany(j => j.Entries)
-          .HasForeignKey(e => e.JournalId)
-          .OnDelete(DeleteBehavior.Cascade);
+        entity.HasOne(e => e.Journal)
+        .WithMany(j => j.Entries)
+        .HasForeignKey(e => e.JournalId)
+        .OnDelete(DeleteBehavior.Cascade);
 
         entity.ToTable("Entries", tb => tb.HasCheckConstraint(
         "CK_UpdatedDate_SameDay",

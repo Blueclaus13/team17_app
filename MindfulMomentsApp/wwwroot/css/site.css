@@ -99,12 +99,3 @@ body {
 form div{
   margin-bottom: 1rem;
 }
-
-/* for entry height */
-.description-truncate {
-    display: -webkit-box;
-    -webkit-line-clamp: 7;
-    -webkit-box-orient: vertical;  
-    overflow: hidden;
-    text-overflow: ellipsis;
-}

@@ -8,8 +8,8 @@
 
 <hr />
 
-<div class="row">
-    <div class="col-md-4">
+<div class="row justify-content-center">
+    <div class="col-md-6 p-4" style="background-color: #d5bca9; border-radius: 10px;">
         <form asp-action="Edit" asp-route-id="@Model.EntryId" method="post">
 
             @Html.AntiForgeryToken()
@@ -38,7 +38,7 @@
                 <label asp-for="Description"></label>
                 <textarea asp-for="Description"
                           class="form-control"
-                          rows="5"></textarea>
+                          rows="8"></textarea>
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
 

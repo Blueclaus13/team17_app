@@ -10,40 +10,50 @@
     <script src="_framework/blazor.server.js"></script>
     <script type="importmap"></script>
     <script src="https://kit.fontawesome.com/9ecf78ba67.js" crossorigin="anonymous"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Jersey+10&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/MindfulMomentsApp.styles.css" asp-append-version="true" />
 </head>
 
+<style>
+    .font-bebas {
+    font-family: 'Bebas Neue', sans-serif;
+
+  }
+</style>
+
 <body>
     <header>
-        <nav class="navbar navbar-dark d-md-none p-3" style="background-color: #6d5440;">
+        <nav class="navbar navbar-dark d-md-none p-3 font-bebas" style="background-color: #6d5440;">
             <div class="container-fluid">
-                <a class="navbar-brand fw-bold" asp-controller="Home" asp-action="Index">MindfulMoments<span class="fw-light opacity-75 fs-6"> @ViewData["Title"]</span></a>
+                <a class="navbar-brand fw-bold font-bebas" asp-controller="Home" asp-action="Index">MindfulMoments<span class="fw-light opacity-75 fs-6"> @ViewData["Title"]</span></a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mobileMenu" aria-controls="mobileMenu" aria-expanded="false" aria-label="Toggle Navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="mobileMenu" role="navigation">
                     <ul class="nav flex-column mt-3">
                         <li class="nav-item mb-2">
-                            <a class="nav-link text-light" asp-controller="Home" asp-action="Index"><i class="fa-solid fa-house me-2"></i> Home</a>
+                            <a class="nav-link text-light font-bebas" asp-controller="Home" asp-action="Index"><i class="fa-solid fa-house me-2"></i> Home</a>
                         </li>
                         @if (User.Identity?.IsAuthenticated == true)
                             {
                                 <li class="nav-item mb-2">
-                                    <a class="nav-link text-light" href="/Journal"><i class="fa-solid fa-book me-2"></i>
+                                    <a class="nav-link text-light font-bebas" href="/Journal"><i class="fa-solid fa-book me-2"></i>
                                     Journal</a>
                                 </li>
-                                <li class="nav-item mb-2"><a class="nav-link text-light" asp-controller="Account"
-                                    asp-action="Index"><i class="fa-solid fa-right-from-bracket me-2"></i> Account</a>
+                                <li class="nav-item mb-2"><a class="nav-link text-light font-bebas" asp-controller="Account"
+                                    asp-action="Index"><i class="fa-solid fa-user me-3"></i> Account</a>
                                 </li>
-                                <li class="nav-item mb-2"><a class="nav-link text-light" asp-controller="Account"
+                                <li class="nav-item mb-2"><a class="nav-link text-light font-bebas" asp-controller="Account"
                                     asp-action="Logout"><i class="fa-solid fa-right-from-bracket me-2"></i> Logout</a>
                                 </li>
                             }
                             else
                             {
-                                <li class="nav-item mb-2"><a class="nav-link text-light" asp-controller="Account"
+                                <li class="nav-item mb-2"><a class="nav-link text-light font-bebas" asp-controller="Account"
                                     asp-action="SignIn"><i class="fa-solid fa-user me-2"></i> Sign In</a>
                                 </li>
                             }
@@ -53,14 +63,14 @@
         </nav>
 
         <div class="d-flex" id="wrapper">
-            <div class="bg-brown text-light d-none d-md-block sidebar-wrapper" style="background-color: #6d5440;" role="navigation" aria-label="Main Sidebar">
+            <div class="bg-brown text-light d-none d-md-block sidebar-wrapper font-bebas" style="background-color: #6d5440;" role="navigation" aria-label="Main Sidebar">
                 <div class="p-4">
-                    <a class="navbar-brand text-light fs-4 fw-bold mb-4 d-block" asp-controller="Home"
+                    <a class="navbar-brand text-light fs-4 fw-bold mb-4 d-block font-bebas" asp-controller="Home"
                         asp-action="Index">MindfulMoments
                     </a>
                         <ul class="nav nav-pills flex-column">
                             <li class="nav-item mb-3">
-                                <a class="nav-link text-light d-flex align-items-center p-1 fs-5" asp-controller="Home"
+                                <a class="nav-link text-light d-flex align-items-center p-1 fs-5 font-bebas" asp-controller="Home"
                                     asp-action="Index">
                                     <i class="fa-solid fa-house me-3"></i> Home
                                 </a>
@@ -68,18 +78,18 @@
                             @if (User.Identity?.IsAuthenticated == true)
                             {
                                 <li class="nav-item mb-3">
-                                    <a class="nav-link text-light d-flex align-items-center p-1 fs-5" href="/Journal">
+                                    <a class="nav-link text-light d-flex align-items-center p-1 fs-5 font-bebas" href="/Journal">
                                         <i class="fa-solid fa-book me-3"></i> Journal
                                     </a>
                                 </li>
                                 <li class="nav-item mb-3">
-                                    <a class="nav-link text-light d-flex align-items-center p-1 fs-5" asp-controller="Account"
+                                    <a class="nav-link text-light d-flex align-items-center p-1 fs-5 font-bebas" asp-controller="Account"
                                         asp-action="Index">
                                         <i class="fa-solid fa-user me-3"></i> Account
                                     </a>
                                 </li>
                                 <li class="nav-item mb-3">
-                                    <a class="nav-link text-light d-flex align-items-center p-1 fs-5"
+                                    <a class="nav-link text-light d-flex align-items-center p-1 fs-5 font-bebas"
                                         asp-controller="Account" asp-action="Logout"><i class="fa-solid fa-right-from-bracket me-3"></i> Logout
                                     </a>
                                 </li>

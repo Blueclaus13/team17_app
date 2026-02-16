@@ -57,6 +57,9 @@ else
     private bool isLoaded;
     private bool isAuthenticated;
 
+    /// <summary>
+    /// Initializes the page by loading journal entries for the authenticated user.
+    /// </summary>
     protected override async Task OnInitializedAsync()
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();

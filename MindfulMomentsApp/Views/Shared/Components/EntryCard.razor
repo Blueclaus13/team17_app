@@ -6,7 +6,7 @@
             @Entry.Mood
         </h4>
 
-        <h6 class="card-subtitle mb-2 text-muted">
+        <h6 class="card-subtitle mb-2 small-text">
             @Entry.CreatedDate.ToLocalTime().ToString("MMMM dd, yyyy")
         </h6>
 
@@ -36,7 +36,7 @@
             }
             @if (Entry.UpdatedDate != null)
             {
-                <small class="text-muted d-block mt-3">
+                <small class="d-block mt-3 small-text">
                     Edited @Entry.UpdatedDate.Value.ToLocalTime().ToString("MMMM dd, yyyy HH:mm")
                 </small>
             }

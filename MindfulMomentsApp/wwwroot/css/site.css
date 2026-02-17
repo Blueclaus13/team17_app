@@ -108,3 +108,8 @@ form div{
 h1, h2, h3 {
   font-family: 'Bebas Neue', sans-serif;
 }
+
+.small-text {
+  color: #373737 !important;
+  font-style: italic;
+}

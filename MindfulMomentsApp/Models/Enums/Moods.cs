@@ -12,7 +12,7 @@ public enum Mood
     Afraid,
     Anxious,
     Stress,
-    Exaustion,
+    Exhaustion,
     Tired,
     Shy,
     Surprise,

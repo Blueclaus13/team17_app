@@ -65,7 +65,17 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
 Microsoft.AspNetCore.HttpOverrides.ForwardedHeaders.XForwardedProto
 });
 app.UseHttpsRedirection();
-app.UseStaticFiles();
+// for caching
+app.UseStaticFiles(new StaticFileOptions
+{
+    OnPrepareResponse = ctx =>
+    {
+        // Cache static files
+        const int durationInSeconds = 60 * 60 * 24 * 365;
+        ctx.Context.Response.Headers[Microsoft.Net.Http.Headers.HeaderNames.CacheControl] = 
+            "public,max-age=" + durationInSeconds;
+    }
+});
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();

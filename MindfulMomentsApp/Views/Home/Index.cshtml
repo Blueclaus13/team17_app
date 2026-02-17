@@ -10,7 +10,7 @@
 
 @if (User.Identity != null && User.Identity.IsAuthenticated)
 {
-    <h2>Welcome @User.Identity.Name!</h2>
+    <h1>Welcome @User.Identity.Name!</h1>
     <p>You are successfully logged in.</p>
 <div class="my-4">
         @await Component.InvokeAsync("Quotes")

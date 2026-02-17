@@ -2,7 +2,7 @@
 for details on configuring this project to bundle and minify static web assets. */
 
 nav {
-  background-color: #705642;
+  background-color: #46362A;
 }
 
 a.navbar-brand {
@@ -12,20 +12,20 @@ a.navbar-brand {
 }
 
 a {
-  color: #705642;
+  color: #46362A;
   
 }
 
 .btn-primary {
   color: #fff;
-  background-color: #705642;
-  border-color: #705642;
+  background-color: #46362A;
+  border-color: #46362A;
 }
 
 .nav-pills .nav-link.active, .nav-pills .show > .nav-link {
   color: #fff;
-  background-color: #705642;
-  border-color: #705642;
+  background-color: #46362A;
+  border-color: #46362A;
 }
 
 .border-top {

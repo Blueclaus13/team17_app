@@ -7,23 +7,22 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - MindfulMomentsApp</title>
-    <script src="_framework/blazor.server.js"></script>
     <script type="importmap"></script>
-    <script src="https://kit.fontawesome.com/9ecf78ba67.js" crossorigin="anonymous"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Jersey+10&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/MindfulMomentsApp.styles.css" asp-append-version="true" />
-</head>
 
-<style>
+    <style>
     .font-bebas {
     font-family: 'Bebas Neue', sans-serif;
 
   }
 </style>
+
+</head>
 
 <body>
     <header>
@@ -128,9 +127,17 @@
             &copy; 2026 - MindfulMomentsApp - <a style="color: #705642 !important" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="https://kit.fontawesome.com/9ecf78ba67.js" crossorigin="anonymous" defer></script>
+    <script src="_framework/blazor.server.js" autostart="false" defer></script>
+    <script src="~/lib/jquery/dist/jquery.min.js" defer></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js" defer></script>
+    <script src="~/js/site.js" asp-append-version="true" defer></script>
         @await RenderSectionAsync("Scripts", required: false)
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            Blazor.start();
+        });
+    </script>
 </body>
 </html>

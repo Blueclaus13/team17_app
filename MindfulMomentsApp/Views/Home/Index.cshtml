@@ -10,19 +10,29 @@
 
 @if (User.Identity != null && User.Identity.IsAuthenticated)
 {
-    <h1>Welcome @User.Identity.Name!</h1>
-    <p>You are successfully logged in.</p>
-<div class="my-4">
+    <div class="hero-banner"
+         style="background-image: url('/images/young_guy.jpg'); background-size: cover; background-position: center; min-height: 550px; display: flex; flex-direction: column; justify-content: space-between; padding: 80px 50px 50px 50px; position: relative;">
+        <div style="text-align: left; color: white;">
+            <h1 style="font-size: 5em;">Welcome @User.Identity.Name!</h1>
+            <p style="font-size: 1.5rem;">You are successfully logged in.</p>
+        </div>
+    </div>
+    <div class="my-4">
         @await Component.InvokeAsync("Quotes")
     </div>
 }
 else
 {
-    <div class="text-center">
-        <h1 class="display-4">Welcome to Mindful Moments</h1>
-        <p>Please sign in to start your session.</p>
+    <div class="hero-banner text-center"
+         style="background-image: url('/images/outdoor_lady.jpg'); background-size: cover; background-position: center; min-height: 700px; display: flex; align-items: flex-start; justify-content: center; padding-top: 80px; position: relative;">
+        <div style="color: white;">
+            <h1 class="display-4" style="font-size: 6rem; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);">Welcome to Mindful
+                Moments</h1>
+                <p style="font-size: 1.5rem; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);">Please sign in to start your session.
+                </p>
 
-        <a class="btn btn-primary" asp-controller="Account" asp-action="SignIn">Sign In</a>
-    </div>
-}
+                <a class="btn btn-primary" asp-controller="Account" asp-action="SignIn">Sign In</a>
+            </div>
+        </div>
+    }
 
